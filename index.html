@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>CRL-Imagine Visualization</title>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+<link href='css/bootstrap.css' rel='stylesheet' />
+<link href='css/bootstrap-responsive.css' rel='stylesheet' />
+<link type='text/css' rel='stylesheet' href='css/xtheme/jquery.ui.css' />
+<link type='text/css' rel='stylesheet' href='css/jquery.miniColors.css' />
+<link type='text/css' rel='stylesheet' href='css/jquery.sidebar.css' />
+<link type='text/css' rel='stylesheet' href='css/frontpage.css' />
+<link type='text/css' rel='stylesheet' href='css/viewer.css' />
+
+<script type='text/javascript' src='js/jquery.js'></script>
+<script type='text/javascript' src='js/jquery.ui.js'></script>
+<script type='text/javascript' src='js/jquery.ui.slider.js'></script>
+<script type='text/javascript' src='js/jquery.miniColors.js'></script>
+<script type='text/javascript' src='js/jquery.filestyle.js'></script>
+<script type='text/javascript' src='js/jquery.idTabs.js'></script>
+<script type='text/javascript' src='js/jquery.sidebar.js'></script>
+<script type='text/javascript' src='js/jquery.sidebar.volume.js'></script>
+<script type='text/javascript' src='js/jquery.sidebar.mesh.js'></script>
+<script type='text/javascript' src='js/jquery.sidebar.fibers.js'></script>
+<script type='text/javascript' src='js/jquery.viewer.js'></script>
+<script type='text/javascript' src='js/jquery.frontpage.js'></script>
+<script type='text/javascript' src='js/dropbox.min.js'></script>
+<script type='text/javascript' src='js/bootstrap-modal.js'></script>
+<script type='text/javascript' src='js/x.controller.js'></script>
+<script type='text/javascript' src='js/x.examples.js'></script>
+<script type='text/javascript' src='js/x.rendering.js'></script>
+<script type='text/javascript' src='js/x.scene.js'></script>
+<script type='text/javascript' src='js/x.share.js'></script>
+<script type='text/javascript' src='js/x.realtime.js'></script>
+<!--script type="text/javascript" src="http://get.goXTK.com/xtk.js"></script-->
+<script type='text/javascript' src='js/xtk.js'></script> 
+
+
+<script type='text/javascript' src='js/pusher.min.js'></script>
+
+<script type="text/javascript">
+
+var interval;
+
+function Play(interval, time) {
+
+	if(document.getElementById('play').textContent == 'Start') {
+		document.getElementById('play').textContent = 'Pause';
+		document.getElementById('play').value = 1;
+
+		interval = setInterval(function(){
+
+			all=document.getElementsByName("weeks");
+
+			for(i=0; i<all.length; i++) {
+				if(all[i].checked) {
+					if(i == all.length - 1) {
+						//all[all.length - 1].checked = false;
+						//all[0].checked = "checked";
+						all[0].click();
+						break;
+					}
+					//all[i].checked = false;
+					//all[i+1].checked = "checked";
+					all[i+1].click();
+					break;
+				}
+			}
+
+		}, (time * 1000));
+
+		return interval;
+	}
+	else {
+		clearInterval(interval);
+		document.getElementById('play').value = 0;
+		document.getElementById('play').textContent = 'Start';
+	}
+
+};
+
+window.onload = function() {
+
+  document.getElementById('play').value = 0;
+
+  var radios=document.getElementsByName("weeks");
+
+  for(var i = 0; i < radios.length; i++) {
+
+	radios[i].onclick = function() {
+
+		if(this.checked) {
+
+			var value = parseInt(this.id.substring(this.id.length - 2));
+
+			location.href = "index.html?" + value + document.getElementById('play').value + document.getElementById('interval').value;
+/*
+
+			ren3d.container.remove();
+			sliceAx.container.remove();
+			sliceCor.container.remove();
+			sliceSag.container.remove();
+
+			jQuery("#viewer").append("<div id='3d' class='threeDRenderer'></div>" +
+			"<div id='sliceAx' class='twoDRenderer'>" +
+			"<div id='blue_slider'></div>" +
+			"<div id='ax_right_label' class='left_annotation'>R</div>" +
+			"<div id='ax_left_label' class='right_annotation'>L</div>" +
+			"<div id='ax_top_label' class='top_annotation'>A</div>" +
+			"<div id='ax_bottom_label' class='bottom_annotation'>P</div>" +
+			"</div>" +
+			"<div id='sliceSag' class='twoDRenderer'>" +
+			"<div id='red_slider'></div>" +
+			"<div id='sag_right_label' class='right_annotation'>P</div>" +
+			"<div id='sag_left_label' class='left_annotation'>A</div>" +
+			"<div id='sag_top_label' class='top_annotation'>S</div>" +
+			"<div id='sag_bottom_label' class='bottom_annotation'>I</div>" +			
+			"</div>" +
+			"<div id='sliceCor' class='twoDRenderer'>" +
+			"<div id='green_slider'></div>" +
+			"<div id='cor_right_label' class='left_annotation'>R</div>" +
+			"<div id='cor_left_label' class='right_annotation'>L</div>" +
+			"<div id='cor_top_label' class='top_annotation'>S</div>" +
+			"<div id='cor_bottom_label' class='bottom_annotation'>I</div>");
+
+			//loadFile('data/T' + value + 'template.nii', true)
+
+			loadScene('json/scene' + value + '.json');
+
+	  		console.log('finished loading the json file ' + value);*/
+		}
+
+	};
+  }
+
+  // create and initialize a 3D renderer
+  var r = new X.renderer3D();
+  r.container = 'logo';
+  r.init();
+  
+  // create a new X.mesh
+  var skull = new X.mesh();
+  // .. and associate the .vtk file to it
+  skull.file = 'gfx/crl.vtk';
+  // .. make it transparent
+  skull.opacity = 0.6;
+  
+  // .. add the mesh
+  r.add(skull);
+  
+  // re-position the camera to face the skull
+  r.camera.position = [0, 150, 0];
+  
+  // animate..
+  r.onRender = function() {
+
+    // rotate the skull around the Z axis
+    // since we moved the camera, it is Z not X
+    skull.transform.rotateZ(0.5);
+    
+    // we could also rotate the camera instead which is better in case
+    // we have a lot of objects and want to rotate them all:
+    //
+    // r.camera.rotate([1,0]);
+    
+  };
+  
+  r.render();
+
+  //ren3d = new X.renderer3D();
+  //ren3d.container = '3d';
+  //ren3d.init();
+  //ren3d.render();
+
+  //loadFile('file:///home/raein/Desktop/Webpage/data/template_T2.nii')
+
+  //ren3d.camera.position = [0, 150, 0];
+  //switchToViewer()
+
+  document.getElementById('interval').value = location.search.substring(4);
+
+  if(location.search == "") {
+
+	  document.getElementById('interval').value = 3;
+
+	  val = 21;
+  }
+
+  else {
+
+	val = location.search.substring(1,3);
+
+  }
+
+  document.getElementsByName("weeks")[val - 21].checked = "checked";
+
+  loadScene('json/scene' + val + '.json');
+
+  console.log('finished loading the json file: ' + 'json/scene' + val + '.json');
+
+  document.getElementById('play').disabled = true;
+
+  setTimeout(function(){
+
+     document.getElementById('play').disabled = false;
+
+     if(location.search.substring(3,4) == "1") {
+	document.getElementById('play').click();
+     }
+
+  }, 3000);
+
+};
+
+</script>
+
+</head>
+<body id='body' class='webgl_enabled'>
+
+	<!-- The frontpage -->
+	<div>
+
+		<a href='./index.html' class="pvw-title" style='font: status-bar; font-size:large; color:#FFF; padding-left: 90px; padding-top: 35px; position: absolute;'>CRL-Imagine</a>
+
+		<a href='http://slicedrop.com/'><img src='gfx/slicedrop_transparent.png' style='z-index:2; float: right; padding-right: 45%; padding-top:10px; height: 60px;'/></a>
+
+		<div id='atlas_selector' style='float: left; padding-left: 25%; z-index: 1;'>
+			<span id="atlas_selection" style='margin-top: 3px; float: left;'>
+			<table cellpadding="5">
+			<tr>
+				<td>
+				<input type="radio" id="a_21" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_22" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_23" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_24" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_25" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_26" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_27" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_28" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_29" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_30" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_31" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_32" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_33" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_34" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_35" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_36" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_37" name="weeks" />
+				</td>
+				<td>
+				<input type="radio" id="a_38" name="weeks" />
+				</td>
+				<td>
+				<button id='play' onclick="interval = Play(interval, document.getElementById('interval').value);">Start</button>
+				</td>
+			<tr>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_21">&nbsp;21</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_22">&nbsp;22</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_23">&nbsp;23</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_24">&nbsp;24</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_25">&nbsp;25</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_26">&nbsp;26</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_27">&nbsp;27</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_28">&nbsp;28</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_29">&nbsp;29</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_30">&nbsp;30</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_31">&nbsp;31</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_32">&nbsp;32</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_33">&nbsp;33</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_34">&nbsp;34</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_35">&nbsp;35</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_36">&nbsp;36</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_37">&nbsp;37</label>
+				</td>
+				<td>
+				<label style='display: contents; color: #FFF;' for="a_38">&nbsp;38</label>
+				</td>
+				<td>
+				<input id='interval' type="number" min="1" max="5" style='width: 40px' value="3"></input>
+				</td>
+				<td>
+				Interval (s)
+				</td>
+				&nbsp;Weeks</span>
+			</table>
+		</div>
+
+		<div id='content' class='container' style='margin: 0'>
+
+			<div id='logo' style='height: 90px; width: 90px; position: absolute !important;'></div>
+
+		</div>
+
+		<!-- /container -->
+
+	</div>
+
+	<!-- The frontpage -->
+	<div id='frontpage' style=''>
+
+		<!--div id='content' class='container' style=''>
+
+			<div class='dropzone'>
+				<span>Drop files here or </span><input id='filebutton' type='file'
+					multiple onchange='selectfiles(this.files)' style='display: none;'></input><a
+					class='btn btn-inverse btn-large' style='vertical-align: super;'
+					onclick='javascript:document.getElementById("filebutton").click();'>Select
+					files</a><br />
+			</div>
+
+		</div-->
+		<!-- /container -->
+
+	</div>
+
+	<!-- Drop note -->
+	<div id='drop-box-overlay'>
+		<h1>Drop files anywhere...</h1>
+	</div>
+
+	<!-- The viewer -->
+	<div id='viewer' style='display: none;'>
+
+		<ul class='navigation'>
+			<li id='volume' class='navigationLi'><div class='menu'>
+					<div class='pin'>
+						<span class='ui-icon ui-icon-pin-w pinicon'></span>
+					</div>
+
+					<div class='tabbox idTabs' id='volumetabs'>
+						<div class='caption'>VOLUME</div>
+
+						<a href='#volumeTab' class='selected'>Volume</a> <a
+							href='#labelmapTab' id='labelmapSwitch'
+							style='margin-left: 50px;'>Labelmap</a>
+						<div id='volumeTab' class='tabContent'>
+
+
+							<div id='modes' style='width: 130px; float: left;'>
+								<div id='volumerendering'>
+									<img src='gfx/3d.png' />
+								</div>
+								<div id='slicing'>
+									<img src='gfx/2d.png' />
+								</div>
+							</div>
+
+							<div id='colors'
+								style='width: 26px; margin-left: 6px; float: left;'>
+
+								<input id='fgColorVolume' type='hidden'
+									class='color-picker black' size='6' value='#ffffff' /> <input
+									id='bgColorVolume' type='hidden' class='color-picker black'
+									size='6' value='#000000' />
+							</div>
+
+							<div id='opacity-label' class='menuLabel'
+								style='margin-top: 4px; float: left;'>3D Opacity</div>
+							<div id='opacity-volume'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+							<div id='windowlevel-label' class='menuLabel'
+								style='margin-top: 4px; float: left;'>Window/Level</div>
+							<div id='windowlevel-volume'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+							<div class='menuLabel' style='margin-top: 4px; float: left;'>Threshold</div>
+							<div id='threshold-volume'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+
+						</div>
+						<div id='labelmapTab' class='tabContent' style='display: none'>
+
+
+							<div id='visibility-labelmap' style='width: 130px; float: left;'>
+								<div class='menuLabel' style='margin-top: 4px; float: left;'>Show/Hide</div>
+								<div id='labelmapvisibility' class='eye show-icon'
+									style='margin-left: 6px;'></div>
+							</div>
+
+							<div class='menuLabel' style='margin-top: 4px; float: left;'>Labelmap
+								Opacity</div>
+							<div id='opacity-labelmap'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+
+						</div>
+					</div>
+
+				</div></li>
+
+			<li id='mesh' class='navigationLi'><div class='menu'>
+					<div class='pin'>
+						<span class='ui-icon ui-icon-pin-w pinicon'></span>
+					</div>
+					<div class='tabbox idTabs'>
+						<div class='caption'>MESH</div>
+
+						<a class='meshtabs selected'>Mesh 1</a>
+						<div id='mesh1' class='tabContent'>
+
+							<div id='visibility-mesh'
+								style='width: 140px; float: left; margin-top: 2px;'>
+								<div class='menuLabel' style='margin-top: 4px; float: left;'>Show/Hide</div>
+								<div id='meshvisibility' class='eye show-icon'
+									style='margin-left: 6px;'></div>
+							</div>
+
+							<input type='hidden' id='meshColor' class='color-picker black'
+								size='6' value='#0000ff' />
+
+							<div class='menuLabel' style='margin-top: 4px; float: left;'>Opacity</div>
+							<div id='opacity-mesh'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+							<div class='menuLabel'
+								style='margin-top: 4px; float: left; margin-top: 10px;'>Scalars</div>
+							<div id='scalars-mesh' style='width: 160px; float: left;'>
+
+								<select id='scalars-selector' style='margin-left: 6px'><option>Scalars
+										1</option></select> <input type='hidden' class='color-picker black'
+									id='scalarsMinColor' size='6' value='#00ff00' /> <input
+									type='hidden' id='scalarsMaxColor' class='color-picker black'
+									size='6' value='#ff0000' />
+							</div>
+
+
+
+							<div class='menuLabel' style='margin-top: 4px; float: left;'>Scalars
+								Threshold</div>
+							<div id='threshold-scalars'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+						</div>
+
+					</div>
+				</div></li>
+
+			<li id='fibers' class='navigationLi'><div class='menu'>
+					<div class='pin'>
+						<span class='ui-icon ui-icon-pin-w pinicon'></span>
+					</div>
+					<div class='tabbox idTabs'>
+						<div class='caption'>FIBERS</div>
+
+						<a class='fiberstabs selected'>Fibers 1</a>
+
+						<div id='fibers1' class='tabContent'>
+
+							<div id='visibility-fibers'
+								style='width: 140px; float: left; margin-top: 2px;'>
+								<div class='menuLabel' style='margin-top: 4px; float: left;'>Show/Hide</div>
+								<div id='fibersvisibility' class='eye show-icon'
+									style='margin-left: 6px;'></div>
+							</div>
+
+							<div class='menuLabel' style='margin-top: 4px; float: left;'>Fiber
+								Length Threshold</div>
+							<div id='threshold-fibers'
+								style='margin-left: 10px; margin-top: 4px; float: left;'></div>
+
+
+						</div>
+
+					</div>
+				</div></li>
+
+		</ul>
+
+
+
+		<!--  The renderers. -->
+
+			<div id='3d' class='threeDRenderer'></div>
+			<div id='sliceAx' class='twoDRenderer'>
+			<div id='blue_slider'></div>
+			<div id='ax_right_label' class='left_annotation'>R</div>
+			<div id='ax_left_label' class='right_annotation'>L</div>
+			<div id='ax_top_label' class='top_annotation'>A</div>
+			<div id='ax_bottom_label' class='bottom_annotation'>P</div>
+			</div>
+				<div id='sliceSag' class='twoDRenderer'>
+					<div id='red_slider'></div>
+			<div id='sag_right_label' class='right_annotation'>P</div>
+			<div id='sag_left_label' class='left_annotation'>A</div>
+			<div id='sag_top_label' class='top_annotation'>S</div>
+			<div id='sag_bottom_label' class='bottom_annotation'>I</div>			
+				</div>
+				<div id='sliceCor' class='twoDRenderer'>
+					<div id='green_slider'></div>
+			<div id='cor_right_label' class='left_annotation'>R</div>
+			<div id='cor_left_label' class='right_annotation'>L</div>
+			<div id='cor_top_label' class='top_annotation'>S</div>
+			<div id='cor_bottom_label' class='bottom_annotation'>I</div>			
+		</div>
+    
+    <div id='log'></div>
+
+	</div>
+
+</body>
+</html>
+
