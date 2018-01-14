@@ -5,7 +5,7 @@ function loadScene(sceneUrl) {
   // grab the JSON scene
   $
       .ajax({
-        type: "POST",
+        //type: "POST",
         url: sceneUrl,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
